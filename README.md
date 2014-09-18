@@ -6,8 +6,7 @@ Overview
 
 Angular Forms provides a generic way to define forms for creating and editing entities. Forms are defined in JSON and in future, will be able to be built using a generic form builder tool, which will significantly aid in creating forms for non-developers. Implementing a form involves a single directive that renders a form based on the provided JSON.
 
-Why
----
+### Why
 
 To allow non-devs to configure forms!
 
