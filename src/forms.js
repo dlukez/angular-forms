@@ -226,7 +226,10 @@ formsModule.directive('dzFieldInsertInput', ['$http', '$compile', '$templateCach
       }
 
       // load when the field type changes
-      $scope.$watch('field.type', loadField);
+      $scope.$watch('field.type', function (n, o) {
+        if(n !== o) loadField();
+      });
+
       // load if the registered field changes
       $scope.$watch(function () { return dzForm.getField($scope.field && $scope.field.type); }, loadField, true);
     }

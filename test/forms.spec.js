@@ -130,6 +130,41 @@ describe('angular forms', function () {
       expect(el[0].querySelectorAll('.text-field').length).toEqual(1);
     });
 
+    describe('templateUrl', function () {
+      var $httpBackend;
+
+      beforeEach(inject(function (_$httpBackend_) {
+        $httpBackend = _$httpBackend_;
+
+        // update the field
+        dzForm.registerField('test', { templateUrl: 'test.tpl.html' });
+        $scope.form.fields = [
+          {
+            name: 'test',
+            type: 'test',
+            label: 'Test'
+          }
+        ];
+
+        // setup the http service
+        $httpBackend.expectGET('test.tpl.html').respond('<input type="text" ng-model="model[field.name]" class="test-field" ng-disabled="disabled()" ng-required="required()" />');
+      }));
+
+      afterEach(function () {
+        $httpBackend.verifyNoOutstandingExpectation();
+      });
+
+      it('should work', inject(function ($httpBackend) {
+        // an apply shouldn't create the element yet, because we haven't flushed the http request
+        $scope.$apply();
+        expect(el[0].querySelectorAll('.test-field').length).toEqual(0);
+
+        // after flushing, we should have one text field
+        $httpBackend.flush();
+        expect(el[0].querySelectorAll('.test-field').length).toEqual(1);
+      }));
+    });
+
     describe('dynamic state', function () {
       describe('visible', function () {
         function testVisible(visible) {
