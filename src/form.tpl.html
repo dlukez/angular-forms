@@ -1,0 +1,7 @@
+<form class="dz-form">
+  <h3 class="dz-form-title">{{ form.title }}</h3>
+  <p class="dz-form-description">{{ form.description }}</p>
+  <fieldset>
+    <dz-field field="field" ng-repeat="(name, field) in form.fields"></dz-field>
+  </fieldset>
+</form>
