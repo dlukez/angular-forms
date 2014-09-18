@@ -10,6 +10,10 @@ Angular Forms provides a generic way to define forms for creating and editing en
 
 To allow non-devs to configure forms!
 
+### Dependencies
+
+Requires Angular >= 1.2.
+
 Features
 --------
 
