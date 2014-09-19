@@ -95,102 +95,88 @@ Example
 Here is an example form schema for a Service Request:
 
     $scope.form = {
-        title: "New Service Request",
-        description: "Use this form to create a new service request.",
-        fields: [
+      title: "New Birthday",
+      description: "Create a new birthday.",
+      fields: [
+        {
+          name: "hiddenField",
+          type: "hidden",
+          value: "Birthday fun!"
+        },
+        {
+          name: "personName",
+          label: "Birthday Person's Name",
+          type: "text"
+        },
+        {
+          name: "dateOfBirth",
+          label: "Date Of Birth",
+          type: "date"
+        },
+        {
+          name: "present",
+          type: "radio",
+          label: "Present wanted",
+          options: {
+            "pony": "Pony",
+            "ipad": "iPad",
+            "bungee": "Bungee",
+            "other": "Other"
+          }
+        },
+        {
+            name: "presentOther",
+            label: "Other",
+            type: "text",
+            visible: "present.value === 'other'",
+            required: "this.visible",
+            disabled: "!this.visible",
+            helpText: "Describe the desired present"
+        },
+        {
+          name: "organiser",
+          type: "form",
+          fields: [
             {
-                name: "serviceRequestId",
-                type: "hidden"
+              name: "organiserName",
+              type: "text",
+              label: "Organiser"
             },
             {
-                name: "teamName",
-                label: "Team Name",
-                type: "text"
+              name: "relationship",
+              type: "select",
+              label: "Relationship",
+              options: {
+                "mum": "Mother",
+                "dad": "Father",
+                "sibling": "Sibling",
+                "friend": "Friend"
+              }
             },
             {
-                name: "orgUnitId",
-                label: "Business Unit",
-                type: "number",
-                helpText: "Please contact your business unit representative if you cannot find your cost centre."
-            },
-            {
-                name: "chargeToOrgUnitId",
-                type: "hidden",
-                value: "{{ businessUnit.value }}",
-            },
-            {
-                name: "requestTypeId",
-                label: "Reason for request",
-                type: "select",
-                required: true,
-                options: [
-                    { value: 1, label: "Get some stuff" },
-                    { value: 2, label: "Drop some stuff" },
-                    { value: 3, label: "New staff" },
-                    { value: 4, label: "Other" }
-                ]
-            },
-            {
-                name: "serviceTypeOther",
-                label: "Other",
-                type: "text",
-                visible: "requestTypeId.value === 4",
-                required: "this.visible",
-                disabled: "!this.visible"
-            },
-            {
-                name: "contactPerson",
-                type: "form",
-                fields: [
-                    {
-                        name: "serviceRequestId",
-                        type: "hidden",
-                        value: "{{ $parent.serviceRequestId }}"
-                    },
-                    {
-                        name: "relationshipTypeId",
-                        type: "hidden",
-                        value: 3043
-                    },
-                    {
-                        name: "personId",
-                        label: "Contact person",
-                        type: "number",
-                        required: true
-                    }
-                ]
-            },
-            {
-                name: "additionalInstructions",
-                label: "Describe your request",
-                type: "textarea"
-            },
-            {
-                name: "specificRequirements",
-                label: "Any specific requirements?",
-                type: "radio",
-                options: [
-                    { value: 1, label: "Yes" },
-                    { value: 0, label: "No" }
-                ],
-                value: 0
-            },
-            {
-                name: "moreInformation",
-                label: "Enter more information",
-                type: "textarea",
-                visible: "specificRequirements.value"
-            },
-            {
-                name: "completionDate",
-                label: "Proposed completion date",
-                type: "date"
+              name: "contactNumber",
+              label: "Contact number",
+              type: "number",
+              required: true
             }
-        ]
+          ]
+        },
+        {
+          name: "specificRequirements",
+          label: "Any specific requirements?",
+          type: "checkbox"
+        },
+        {
+          name: "moreInformation",
+          helpText: "Enter more information",
+          type: "textarea",
+          visible: "specificRequirements.value === true"
+        }
+      ]
     };
 
     // where the values will be written
-    $scope.request = {};
+    $scope.birthday = {};
 
 To render the form, include the module in your application:
 
@@ -207,4 +193,5 @@ TODO
 - Repeater for fields
 - Include other themes (currently based on bootstrap)
 - Form builder
+- Performance improvements (use $parse, directive compile function)
 - File upload plugin?

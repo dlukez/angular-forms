@@ -27,6 +27,14 @@ module.exports = function (grunt) {
       }
     },
 
+    copy: {
+      example: {
+        files: {
+          'example/dz-forms.js': 'release/dz-forms.js'
+        }
+      }
+    },
+
     jshint: {
       release: ['release/dz-forms.js']
     },
@@ -94,6 +102,7 @@ module.exports = function (grunt) {
 
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-concat');
+  grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-bump');
@@ -101,6 +110,6 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-html2js');
   grunt.loadNpmTasks('grunt-karma');
 
-  grunt.registerTask('default', ['clean', 'karma:src', 'html2js', 'concat', 'jshint:release', 'uglify', 'clean:temp', 'karma:plain', 'karma:min']);
+  grunt.registerTask('default', ['clean', 'karma:src', 'html2js', 'concat', 'jshint:release', 'uglify', 'clean:temp', 'karma:plain', 'karma:min', 'copy:example']);
   grunt.registerTask('release', ['bump-only', 'default', 'changelog', 'bump-commit']);
 };

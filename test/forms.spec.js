@@ -12,34 +12,12 @@ describe('angular forms', function () {
   beforeEach(module('dz.forms'));
   beforeEach(inject(function ($rootScope, $compile) {
     $scope = $rootScope.$new();
+    $scope.model = {};
     el = $compile('<dz-form form="form" model="model" disabled="disabled"></dz-form>')($scope);
     $scope.$apply();
   }));
 
   describe('form', function () {
-    // tests against release versions don't have access
-    // to the form controller
-    if(window.FormController) {
-      describe('controller', function () {
-        var controller;
-
-        beforeEach(inject(function ($controller) {
-          $scope.form = {
-            title: 'New Form',
-            description: 'Some description',
-            randomNumber: 33
-          };
-
-          controller = $controller(FormController, { $scope: $scope });
-        }));
-
-        it('should provide access to the root form', function () {
-          var root = controller.getRoot();
-          expect(root).toBe($scope.form);
-        });
-      });
-    }
-
     describe('directive', function () {
       beforeEach(function () {
         $scope.form = {
@@ -70,7 +48,7 @@ describe('angular forms', function () {
     });
   });
 
-  describe('fields', function () {
+  describe('field', function () {
     var dzForm,
         textField = { template: '<input type="text" ng-model="model[field.name]" class="text-field" ng-disabled="disabled()" ng-required="required()" />' };
 
@@ -89,53 +67,49 @@ describe('angular forms', function () {
       $scope.$apply();
     }));
 
-    it('should support registering a field type', function () {
-      expect(dzForm.getField('text').template).toEqual(textField.template);
-      expect(el[0].querySelectorAll('.text-field').length).toEqual(1);
-    });
+    describe('definition', function () {
+      it('should support registering a field type', function () {
+        expect(dzForm.getField('text').template).toEqual(textField.template);
+        expect(el[0].querySelectorAll('.text-field').length).toEqual(1);
+      });
 
-    it('should support registering a field type after load', function () {
-      $scope.form.fields.push({ name: 'numberTest', type: 'number', label: 'Number' });
-      $scope.$apply();
-      expect(el[0].querySelectorAll('.number-field').length).toEqual(0);
-      dzForm.registerField('number', { template: '<input type="number" ng-model="model[field.name]" class="number-field" />' });
-      $scope.$apply();
-      expect(el[0].querySelectorAll('.number-field').length).toEqual(1);
-    });
+      it('should support registering a field type after load', function () {
+        $scope.form.fields.push({ name: 'numberTest', type: 'number', label: 'Number' });
+        $scope.$apply();
+        expect(el[0].querySelectorAll('.number-field').length).toEqual(0);
+        dzForm.registerField('number', { template: '<input type="number" ng-model="model[field.name]" class="number-field" />' });
+        $scope.$apply();
+        expect(el[0].querySelectorAll('.number-field').length).toEqual(1);
+      });
 
-    it('should support unregistering a field type', function () {
-      dzForm.unregisterField('text');
-      $scope.$apply();
-      expect(dzForm.getField('text')).toBeNull();
-      expect(el[0].querySelectorAll('.text-field').length).toEqual(0);
-    });
+      it('should support unregistering a field type', function () {
+        dzForm.unregisterField('text');
+        $scope.$apply();
+        expect(dzForm.getField('text')).toBeNull();
+        expect(el[0].querySelectorAll('.text-field').length).toEqual(0);
+      });
 
-    it('should support changing a field type', function () {
-      dzForm.registerField('number', { template: '<input type="number" ng-model="model[field.name]" class="number-field" />' });
-      $scope.form.fields[0].type = 'number';
-      $scope.$apply();
-      expect(el[0].querySelectorAll('.number-field').length).toEqual(1);
-    });
+      it('should support changing a field type', function () {
+        dzForm.registerField('number', { template: '<input type="number" ng-model="model[field.name]" class="number-field" />' });
+        $scope.form.fields[0].type = 'number';
+        $scope.$apply();
+        expect(el[0].querySelectorAll('.number-field').length).toEqual(1);
+      });
 
-    it('can be specified using an object', function () {
-      $scope.form.fields = {
-        'test': {
-          name: 'test',
-          type: 'text',
-          label: 'Test'
-        }
-      };
-      $scope.$apply();
-      expect(dzForm.getField('text').template).toEqual(textField.template);
-      expect(el[0].querySelectorAll('.text-field').length).toEqual(1);
-    });
+      it('can be specified using an object', function () {
+        $scope.form.fields = {
+          'test': {
+            name: 'test',
+            type: 'text',
+            label: 'Test'
+          }
+        };
+        $scope.$apply();
+        expect(dzForm.getField('text').template).toEqual(textField.template);
+        expect(el[0].querySelectorAll('.text-field').length).toEqual(1);
+      });
 
-    describe('templateUrl', function () {
-      var $httpBackend;
-
-      beforeEach(inject(function (_$httpBackend_) {
-        $httpBackend = _$httpBackend_;
-
+      it('templateUrl should work', inject(function ($httpBackend) {
         // update the field
         dzForm.registerField('test', { templateUrl: 'test.tpl.html' });
         $scope.form.fields = [
@@ -148,13 +122,7 @@ describe('angular forms', function () {
 
         // setup the http service
         $httpBackend.expectGET('test.tpl.html').respond('<input type="text" ng-model="model[field.name]" class="test-field" ng-disabled="disabled()" ng-required="required()" />');
-      }));
 
-      afterEach(function () {
-        $httpBackend.verifyNoOutstandingExpectation();
-      });
-
-      it('should work', inject(function ($httpBackend) {
         // an apply shouldn't create the element yet, because we haven't flushed the http request
         $scope.$apply();
         expect(el[0].querySelectorAll('.test-field').length).toEqual(0);
@@ -162,6 +130,8 @@ describe('angular forms', function () {
         // after flushing, we should have one text field
         $httpBackend.flush();
         expect(el[0].querySelectorAll('.test-field').length).toEqual(1);
+
+        $httpBackend.verifyNoOutstandingExpectation();
       }));
     });
 
@@ -177,13 +147,14 @@ describe('angular forms', function () {
 
         it('should correctly show field', function () {
           $scope.form.fields[0].visible = 'test.value !== \'hide-me\'';
+          $scope.model.test = 'sup';
           $scope.$apply();
           testVisible();
         });
 
         it('should correctly hide field', function () {
           $scope.form.fields[0].visible = 'test.value !== \'hide-me\'';
-          $scope.form.fields[0].value = 'hide-me';
+          $scope.model.test = 'hide-me';
           $scope.$apply();
           testVisible(false);
         });
@@ -201,13 +172,14 @@ describe('angular forms', function () {
 
         it('should correctly make field optional', function () {
           $scope.form.fields[0].required = 'test.value === \'require-me\'';
+          $scope.model.test = 'sup';
           $scope.$apply();
           testRequired(false);
         });
 
         it('should correctly make field required', function () {
           $scope.form.fields[0].required = 'test.value === \'require-me\'';
-          $scope.form.fields[0].value = 'require-me';
+          $scope.model.test = 'require-me';
           $scope.$apply();
           testRequired(true);
         });
@@ -225,17 +197,57 @@ describe('angular forms', function () {
 
         it('should correctly enable field', function () {
           $scope.form.fields[0].disabled = 'test.value === \'require-me\'';
+          $scope.model.test = 'sup';
           $scope.$apply();
           testDisabled(false);
         });
 
         it('should correctly disable field', function () {
           $scope.form.fields[0].disabled = 'test.value === \'require-me\'';
-          $scope.form.fields[0].value = 'require-me';
+          $scope.model.test = 'require-me';
           $scope.$apply();
           testDisabled(true);
         });
       });
     });
+
+    describe('sub forms', function () {
+      beforeEach(inject(function ($templateCache) {
+        dzForm.registerField('form', { template: $templateCache.get('fields/form.tpl.html') });
+        $scope.form.fields.push({
+          name: 'sub',
+          type: 'form',
+          fields: [
+            {
+              name: 'test',
+              type: 'text',
+              label: 'hey'
+            }
+          ]
+        });
+        $scope.$apply();
+      }));
+
+      it('should render', function () {
+        expect(el[0].querySelectorAll('.dz-sub-form').length).toEqual(1);
+      });
+
+      it('should render fields', function () {
+        expect(el[0].querySelectorAll('.dz-sub-form .text-field').length).toEqual(1);
+      });
+
+      it('should update the model', function () {
+        var textInput = el[0].querySelector('.dz-sub-form .text-field');
+        textInput.value = 'sub-form input';
+        dispatchEvent(textInput, 'change', false, true);
+        expect($scope.model.sub.test).toEqual(textInput.value);
+      });
+    });
   });
 });
+
+function dispatchEvent(el, type, bubble, cancelable) {
+  var event = document.createEvent('Event');
+  event.initEvent(type, bubble, cancelable);
+  el.dispatchEvent(event);
+}

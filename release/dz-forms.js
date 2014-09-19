@@ -1,3 +1,5 @@
+(function(window, angular) {
+
 'use strict';
 
 /**
@@ -309,3 +311,47 @@ fieldsModule.directive('dzInputDate', ['dateFilter', function inputDateDirective
     }
   };
 }]);
+angular.module('dz.forms.templates', []).run(['$templateCache', function($templateCache) {
+  $templateCache.put("field.tpl.html",
+    "<div class=\"dz-form-field form-group\" ng-show=\"visible()\">\n" +
+    "  <label ng-show=\"field.label\">{{ field.label }}</label>\n" +
+    "  <!-- directive: dz-field-insert-input -->\n" +
+    "  <span class=\"help-block\" ng-show=\"field.helpText\">{{ field.helpText }}</span>\n" +
+    "</div>");
+  $templateCache.put("form.tpl.html",
+    "<form class=\"dz-form\">\n" +
+    "  <h3 class=\"dz-form-title\">{{ form.title }}</h3>\n" +
+    "  <p class=\"dz-form-description\">{{ form.description }}</p>\n" +
+    "  <fieldset>\n" +
+    "    <dz-form-field field=\"field\" ng-repeat=\"(name, field) in form.fields\"></dz-form-field>\n" +
+    "  </fieldset>\n" +
+    "</form>");
+}]);
+
+angular.module('dz.forms.fields.templates', []).run(['$templateCache', function($templateCache) {
+  $templateCache.put("fields/checkbox.tpl.html",
+    "<input type=\"checkbox\" ng-model=\"model[field.name]\" />");
+  $templateCache.put("fields/date.tpl.html",
+    "<input type=\"date\" ng-model=\"model[field.name]\" class=\"form-control\" dz-input-date />");
+  $templateCache.put("fields/form.tpl.html",
+    "<dz-sub-form form=\"field\" class=\"dz-sub-form\" ng-show=\"visible()\" disabled=\"disabled()\"></dz-sub-form>");
+  $templateCache.put("fields/hidden.tpl.html",
+    "<input type=\"hidden\" ng-model=\"model[field.name]\" />");
+  $templateCache.put("fields/number.tpl.html",
+    "<input type=\"number\" ng-model=\"model[field.name]\" class=\"form-control\" ng-disabled=\"disabled()\" ng-required=\"required()\" />");
+  $templateCache.put("fields/radio.tpl.html",
+    "<div class=\"radio\" ng-repeat=\"option in options\">\n" +
+    "  <label>\n" +
+    "    <input type=\"radio\" name=\"{{ field.name }}\" value=\"{{ option.value }}\" ng-model=\"model[field.name]\" ng-disabled=\"disabled()\" />\n" +
+    "    {{ option.label }}\n" +
+    "  </label>\n" +
+    "</div>");
+  $templateCache.put("fields/select.tpl.html",
+    "<select class=\"form-control\" ng-model=\"model[field.name]\" ng-options=\"option.value as option.label for option in options\" ng-required=\"required()\" ng-disabled=\"disabled()\"></select>");
+  $templateCache.put("fields/text.tpl.html",
+    "<input type=\"text\" ng-model=\"model[field.name]\" class=\"form-control\" ng-disabled=\"disabled()\" ng-required=\"required()\" />");
+  $templateCache.put("fields/textarea.tpl.html",
+    "<textarea class=\"form-control\" ng-model=\"model[field.name]\" ng-disabled=\"disabled()\" ng-required=\"required()\"></textarea>");
+}]);
+
+})( window, window.angular );

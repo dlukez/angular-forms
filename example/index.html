@@ -1,0 +1,144 @@
+<html ng-app="app">
+<head>
+  <title>Angular JSON Forms Example</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular.min.js"></script>
+  <script src="dz-forms.js"></script>
+
+  <script type="text/javascript">
+    var app = angular.module('app', ['dz.forms']);
+
+    app.controller('MainController', function ($scope) {
+      $scope.form = {
+        title: "New Birthday",
+        description: "Create a new birthday.",
+        fields: [
+          {
+            name: "hiddenField",
+            type: "hidden",
+            value: "Birthday fun!"
+          },
+          {
+            name: "personName",
+            label: "Birthday Person's Name",
+            type: "text"
+          },
+          {
+            name: "dateOfBirth",
+            label: "Date Of Birth",
+            type: "date"
+          },
+          {
+            name: "present",
+            type: "radio",
+            label: "Present wanted",
+            options: {
+              "pony": "Pony",
+              "ipad": "iPad",
+              "bungee": "Bungee",
+              "other": "Other"
+            }
+          },
+          {
+            name: "presentOther",
+            label: "Other",
+            type: "text",
+            visible: "present.value === 'other'",
+            required: "this.visible",
+            disabled: "!this.visible",
+            helpText: "Describe the desired present"
+          },
+          {
+            name: "organiser",
+            type: "form",
+            fields: [
+              {
+                name: "organiserName",
+                type: "text",
+                label: "Organiser"
+              },
+              {
+                name: "relationship",
+                type: "select",
+                label: "Relationship",
+                options: {
+                  "mum": "Mother",
+                  "dad": "Father",
+                  "sibling": "Sibling",
+                  "friend": "Friend"
+                }
+              },
+              {
+                name: "contactNumber",
+                label: "Contact number",
+                type: "number",
+                required: true
+              }
+            ]
+          },
+          {
+            name: "specificRequirements",
+            label: "Any specific requirements?",
+            type: "checkbox"
+          },
+          {
+            name: "moreInformation",
+            helpText: "Enter more information",
+            type: "textarea",
+            visible: "specificRequirements.value === true"
+          }
+        ]
+      };
+
+      // bind the form schema to a textarea
+      $scope.$watch('form', function updateJson() {
+        try {
+          $scope.formJson = angular.toJson($scope.form, true);
+        } catch(ex) {}
+      }, true);
+
+      // update the form from the textarea json
+      $scope.updateForm = function () {
+        try {
+          $scope.form = angular.fromJson($scope.formJson);
+        } catch(ex) {}
+      };
+
+      // where the values will be written
+      $scope.birthday = {};
+    });
+  </script>
+
+  <style type="text/css">
+    html, body {
+      height: 100%;
+      width: 100%;
+    }
+
+    .container, .row {
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container" ng-controller="MainController">
+    <div class="row">
+      <div class="col-md-6">
+        <dz-form form="form" model="birthday"></dz-form>
+      </div>
+
+      <div class="col-md-6">
+        <textarea class="form-control" style="width: 100%; height: 50%; margin-top: 20px;" ng-model="formJson" ng-change="updateForm()">
+        </textarea>
+
+        <div style="height: 50%;">
+          $scope.birthday:<br />
+          {{ birthday }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
