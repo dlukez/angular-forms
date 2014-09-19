@@ -3,6 +3,7 @@ module.exports = function (grunt) {
     bump: {
       options: {
         files: ['package.json'],
+        commitMessage: 'chore(release): release v%VERSION%',
         commitFiles: ['release/', 'package.json', 'CHANGELOG.md'],
         tagName: '%VERSION%',
         push: false
